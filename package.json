@@ -1,0 +1,39 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@aws-amplify/ui-vue": "^4.2.3",
+    "@pinia/nuxt": "^0.5.1",
+    "@vite-pwa/nuxt": "^0.6.0",
+    "@vuepic/vue-datepicker": "^8.3.2",
+    "aws-amplify": "^6.0.26",
+    "nuxt": "^3.11.1",
+    "nuxt-icon": "^0.6.10",
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21",
+    "vue-currency-input": "^3.1.0",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@aws-amplify/backend": "^0.13.0-beta.14",
+    "@aws-amplify/backend-cli": "^0.12.0-beta.16",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "autoprefixer": "^10.4.19",
+    "aws-cdk": "^2.135.0",
+    "aws-cdk-lib": "^2.135.0",
+    "constructs": "^10.3.0",
+    "esbuild": "^0.20.2",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3"
+  }
+}

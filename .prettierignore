@@ -1,0 +1,8 @@
+node_modules
+public/*
+!public/*.html
+!public/*.js
+.nuxt
+.amplify
+.prettierignore
+.gitignore
