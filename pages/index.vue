@@ -1,22 +1,82 @@
-<script setup lang="ts">
+<template>
+  <authenticator>
+    <template v-slot="{ user, signOut }">
+      <MainLayout>
+        <div id="IndexPage" class="w-full overflow-auto p-5">
+          <div class="mx-auto max-w-[500px] overflow-hidden">
+            <div id="Posts" class="px-4 max-w-[600px] mx-auto"></div>
+            <div v-if="posts.length" v-for="post in posts" :key="post.id">
+              <Post :post="post" :user="user" />
+            </div>
+            <div
+              v-if="isLoading"
+              class="mt-20 w-full flex items-center justify-center mx-auto"
+            >
+              <div
+                class="text-white mx-auto flex flex-col items-center justify-center"
+              >
+                <Icon
+                  name="eos-icons:bubble-loading"
+                  size="50"
+                  color="#ffffff"
+                />
+                <div class="w-full mt-1">Loading...</div>
+              </div>
+            </div>
+            <div
+              v-if="!isLoading && posts.length === 0"
+              class="mt-20 w-full flex items-center justify-center mx-auto"
+            >
+              <div
+                class="text-white mx-auto flex flex-col items-center justify-center"
+              >
+                <Icon name="tabler:mood-empty" size="50" color="#ffffff" />
+                <div class="w-full">Make the first post!</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-60"></div></div
+      ></MainLayout>
+    </template>
+  </authenticator>
+</template>
+
+<script lang="ts" setup>
 import { Authenticator } from "@aws-amplify/ui-vue";
 import "@aws-amplify/ui-vue/styles.css";
 import { Amplify } from "aws-amplify";
 import config from "../amplifyconfiguration.json";
+import { onMounted, ref } from "vue";
+import {
+  listPosts,
+  createOrGetProfile,
+  type PostEntity,
+} from "../data/entities";
+import { getCurrentUser } from "aws-amplify/auth";
 Amplify.configure(config);
+
+let isLoading = ref(false);
+let posts = ref([] as PostEntity[]);
+
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    const postList = await listPosts();
+    const user = await getCurrentUser();
+    await createOrGetProfile({
+      name: user.signInDetails?.loginId || user.username || user.userId,
+      email: user.signInDetails!.loginId!,
+      avatar:
+        "https://fdocizdzprkfeigbnlxy.supabase.co/storage/v1/object/public/arbor-eats-app-files/missing-avatar.png",
+      userId: user.userId,
+      venmoHandle: "",
+    });
+    posts.value = postList;
+    isLoading.value = false;
+  } catch (error) {
+    console.log(error);
+  }
+});
 </script>
 
-<template>
-  <authenticator>
-    <template v-slot="{ user, signOut }">
-      <h1>Hello {{ user.username }}!</h1>
-      <button @click="signOut">Sign Out</button>
-      <!-- <feed :user="user" /> -->
-      <!-- <example :user="user" /> -->
-
-      <MainLayout>
-        <div>Hello World</div>
-      </MainLayout>
-    </template>
-  </authenticator>
-</template>
+<style></style>

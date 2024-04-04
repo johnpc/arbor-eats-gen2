@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ["nuxt-icon", "@pinia/nuxt", "@vite-pwa/nuxt"],
   nitro: {
     prerender: {
-      routes: ["/"],
+      routes: [],
       failOnError: false,
     },
   },
