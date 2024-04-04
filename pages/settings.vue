@@ -2,10 +2,7 @@
   <authenticator>
     <template v-slot="{ user, signOut }">
       <MainLayout>
-        <div
-          id="Account"
-          class="w-full"
-        >
+        <div id="Account" class="w-full">
           <div
             class="bg-black w-full rounded-lg text-white border border-gray-600 p-2"
             v-if="profile?.id"
@@ -67,7 +64,7 @@
             <div class="border-b border-b-gray-700 my-1" />
             <div class="border-b border-b-gray-700 my-1" />
             <button
-              @click="() => logOut(signOut, user)"
+              @click="() => logOut(signOut)"
               class="flex items-center justify-between bg-black w-full p-3"
             >
               <div>Log Out</div>
@@ -104,12 +101,15 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentUser, deleteUser as deleteAmplifyUser } from "aws-amplify/auth";
+import {
+  getCurrentUser,
+  deleteUser as deleteAmplifyUser,
+} from "aws-amplify/auth";
 import { getProfileFromUser } from "../helpers/userProfileHelper";
 import { updateProfile, deleteUser } from "../data/entities";
 import { Authenticator } from "@aws-amplify/ui-vue";
 import "@aws-amplify/ui-vue/styles.css";
-import {Amplify} from "aws-amplify";
+import { Amplify } from "aws-amplify";
 import config from "../amplifyconfiguration.json";
 Amplify.configure(config);
 
@@ -121,7 +121,7 @@ onMounted(async () => {
   profile.value = profileEntity;
 });
 
-async function updateUserProfile(key) {
+async function updateUserProfile(key: any) {
   try {
     loading.value = true;
     const updates = {
@@ -135,13 +135,13 @@ async function updateUserProfile(key) {
     const profileEntity = await updateProfile(updates);
     profile.value = profileEntity;
   } catch (error) {
-    alert(error.message);
+    alert((error as Error).message);
   } finally {
     loading.value = false;
   }
 }
 
-async function deleteAccount(signOut) {
+async function deleteAccount(signOut: () => void) {
   const shouldDelete = confirm("Are you sure? This action cannot be reversed.");
   if (!shouldDelete) {
     return;
@@ -152,9 +152,9 @@ async function deleteAccount(signOut) {
     await deleteUser(profile.value);
     await deleteAmplifyUser();
     await signOut();
-  } catch (e) {
-    console.log(e);
-    alert(error.message);
+  } catch (error) {
+    console.log(error);
+    alert((error as Error).message);
   } finally {
     loading.value = false;
   }
@@ -162,12 +162,12 @@ async function deleteAccount(signOut) {
   console.log({ shouldDelete });
 }
 
-async function logOut(signOut, user) {
+async function logOut(signOut: () => void) {
   try {
     loading.value = true;
     await signOut();
   } catch (error) {
-    alert(error.message);
+    alert((error as Error).message);
   } finally {
     loading.value = false;
   }

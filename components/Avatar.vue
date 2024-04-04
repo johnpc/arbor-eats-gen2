@@ -41,10 +41,10 @@ const uploading = ref(false);
 const src = ref("");
 const files = ref();
 const downloadImage = async () => {
-  src.value = path.value;
+  src.value = path!.value;
 };
 
-const uploadAvatar = async (evt) => {
+const uploadAvatar = async (evt: any) => {
   files.value = evt.target.files;
   try {
     uploading.value = true;
@@ -58,7 +58,7 @@ const uploadAvatar = async (evt) => {
     emit("update:path", href);
     emit("upload", key);
   } catch (error) {
-    alert(error.message);
+    alert((error as Error).message);
   } finally {
     uploading.value = false;
   }
@@ -66,8 +66,8 @@ const uploadAvatar = async (evt) => {
 
 downloadImage();
 
-watch(path, () => {
-  if (path.value) {
+watch(path!, () => {
+  if (path!.value) {
     downloadImage();
   }
 });

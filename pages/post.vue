@@ -59,14 +59,22 @@ import "@aws-amplify/ui-vue/styles.css";
 import { Amplify } from "aws-amplify";
 import config from "../amplifyconfiguration.json";
 import { useRoute } from "vue-router";
-import { hydratePost } from "../data/entities";
+import {
+  hydratePost,
+  unsubscribeListener,
+  profileUpdateListener,
+  commentCreateListener,
+  likeCreateListener,
+  likeDeleteListener,
+} from "../data/entities";
 Amplify.configure(config);
 const route = useRoute();
 const postId = route.query.post_id;
 const post = ref(false);
 const isLoading = ref(true);
+const listeners = ref([]);
 
-onBeforeMount(async () => {
+const setup = async () => {
   isLoading.value = true;
   try {
     const postEntity = await hydratePost(postId);
@@ -75,8 +83,23 @@ onBeforeMount(async () => {
   } catch (error) {
     console.log(error);
   }
+};
+onBeforeMount(async () => {
+  await setup();
+  const profileListener = profileUpdateListener(setup);
+  const commentListener = commentCreateListener(setup);
+  const likeListener = likeCreateListener(setup);
+  const unlikeListener = likeDeleteListener(setup);
+  listeners.value = [
+    profileListener,
+    commentListener,
+    likeListener,
+    unlikeListener,
+  ];
 });
-
+onUnmounted(() => {
+  listeners.value.map((listener) => unsubscribeListener(listener));
+});
 const goHome = async () => {
   return navigateTo("/");
 };

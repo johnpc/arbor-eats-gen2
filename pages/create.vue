@@ -202,8 +202,7 @@ const createUserPost = async () => {
   if (fileData.value) {
     const uploadResponse = await uploadImageData(
       `${uuidv4()}.jpg`,
-      fileData.value,
-      "arbor-eats-app-files"
+      fileData.value
     );
     key = uploadResponse.key;
   }

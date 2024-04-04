@@ -11,8 +11,6 @@ export const useUserStore = defineStore("user", {
     posts: [] as PostEntity[],
     post: {},
     profile: {},
-    isMenuOverlay: false,
-    isLogoutOverlay: false,
   }),
 
   actions: {
@@ -43,8 +41,6 @@ export const useUserStore = defineStore("user", {
       this.profile = {};
       this.post = {};
       this.posts = [];
-      this.isLogoutOverlay = false;
-      this.isMenuOverlay = false;
       return this;
     },
   },

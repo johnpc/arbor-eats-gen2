@@ -1,15 +1,16 @@
 <template>
-  <div class="z-50 bottom-0 h-full w-full">
+  <div v-if="loading">loading...</div>
+  <div v-else class="z-50 bottom-0 h-full w-full">
     <div class="py-2 w-full">
       <div class="flex items-center justify-between">
         <div class="flex items-center text-white">
-          <img class="rounded-full h-[20px]" :src="post.profile.avatar" />
+          <img class="rounded-full h-[20px]" :src="post?.profile.avatar" />
           <div @click="viewPost(post)" class="ml-2 text-slate text-[18px]">
-            {{ post.title ?? post.text }}
+            {{ post?.title ?? post?.text }}
           </div>
         </div>
         <div
-          v-if="props.user.userId == post.userId"
+          v-if="props.user?.userId == post?.userId"
           @click="isMenu = !isMenu"
           class="relative"
         >
@@ -37,7 +38,7 @@
             class="absolute border border-gray-600 right-0 z-20 mt-1 rounded"
           >
             <button
-              @click="deleteUserPost(post.id, post.picture)"
+              @click="deleteUserPost(post?.id)"
               class="flex items-center rounded gap-2 text-red-500 justify-between bg-black w-full pl-4 pr-3 py-1 hover:bg-gray-900"
             >
               <div>Delete</div>
@@ -47,13 +48,13 @@
         </div>
       </div>
       <div class="p-2 text-white ml-2 text-[8px]">
-        Posted on {{ new Date(post.createdAt).toDateString() }} at
+        Posted on {{ new Date(post?.createdAt).toDateString() }} at
         {{
-          new Date(post.createdAt).getHours() > 12
-            ? new Date(post.createdAt).getHours() - 12
-            : new Date(post.createdAt).getHours()
-        }}:{{ new Date(post.createdAt).getMinutes()
-        }}{{ new Date(post.createdAt).getHours() > 12 ? "pm" : "am" }}
+          new Date(post?.createdAt).getHours() > 12
+            ? new Date(post?.createdAt).getHours() - 12
+            : new Date(post?.createdAt).getHours()
+        }}:{{ new Date(post?.createdAt).getMinutes()
+        }}{{ new Date(post?.createdAt).getHours() > 12 ? "pm" : "am" }}
       </div>
       <div class="relative flex items-center w-full">
         <div class="w-[42px] mx-auto">
@@ -62,13 +63,13 @@
         <div
           class="bg-black rounded-lg w-[calc(100%-50px)] text-sm w-full font-light"
         >
-          <div class="py-2 text-gray-300">{{ post.text }}</div>
+          <div class="py-2 text-gray-300">{{ post?.text }}</div>
           <hr />
           <div class="py-2 text-gray-300">
-            {{ post.profile.name.split(" ")[0].split("@")[0] }} - ${{
-              post.price
+            {{ post?.profile.name.split(" ")[0].split("@")[0] }} - ${{
+              post?.price
             }}
-            - Available {{ formatDate(new Date(post.prepDate)) }}
+            - Available {{ formatDate(new Date(post?.prepDate)) }}
           </div>
           <img
             v-if="post && post.image"
@@ -83,7 +84,7 @@
               class="flex items-center gap-1"
             >
               <Icon
-                v-if="!hasLikedComputed"
+                v-if="!hasLiked"
                 class="p-1 text-white hover:bg-gray-800 rounded-full cursor-pointer"
                 name="mdi:cards-heart-outline"
                 size="28"
@@ -95,15 +96,14 @@
                 size="28"
               />
               <span class="text-white"
-                >You're <span v-if="!hasLikedComputed">out</span
-                ><span v-else>in</span>. Tap the heart if you want
-                <span v-if="!hasLikedComputed">in</span
+                >You're <span v-if="!hasLiked">out</span><span v-else>in</span>.
+                Tap the heart if you want <span v-if="!hasLiked">in</span
                 ><span v-else>out</span>.</span
               >
             </button>
             <div class="relative text-sm text-gray-500">
               <div>
-                <span v-if="!isLike">{{ post.likes.length }}</span>
+                <span v-if="!isLike">{{ post?.likes.length }}</span>
                 <span v-else>
                   <Icon
                     name="eos-icons:bubble-loading"
@@ -111,16 +111,19 @@
                     size="13"
                   />
                 </span>
-                friend{{ post.likes.length === 1 ? "" : "s" }} getting
+                friend{{ post?.likes.length === 1 ? "" : "s" }} getting
                 {{
-                  post.likes
-                    .map((like) => like.count)
-                    .reduce((partialSum, a) => partialSum + a, 0)
+                  post?.likes
+                    .map((like: LikeStub) => like.count)
+                    .reduce(
+                      (partialSum: number, a: number) => partialSum + a,
+                      0
+                    )
                 }}
                 servings.
                 <div @click="viewPost(post)" class="inline pr-10">
                   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  {{ post.comments.length }}&nbsp;&nbsp;
+                  {{ post?.comments.length }}&nbsp;&nbsp;
                   <span>
                     <Icon
                       name="mdi:comment-user-outline"
@@ -180,12 +183,12 @@
     <ul
       v-if="likeEntities.length"
       v-for="like in likeEntities"
-      :key="like"
+      :key="like?.id"
       class="list-outside list-disc pt-2"
     >
       <li class="w-full text-xs text-slate-200 overflow-auto">
-        🍔 {{ like.profile.name.split("@")[0] }} getting
-        {{ like.count }} servings (${{ like.count * post.price }})
+        🍔 {{ like?.profile.name.split("@")[0] }} getting
+        {{ like?.count }} servings (${{ like?.count * post?.price }})
       </li>
     </ul>
 
@@ -194,50 +197,73 @@
 </template>
 
 <script setup lang="ts">
-import { type AuthUser } from "aws-amplify/auth";
+import { getCurrentUser, type AuthUser } from "aws-amplify/auth";
 import { getProfileFromUser } from "../helpers/userProfileHelper";
 import {
   createLike,
   hydratePost,
   hydrateLike,
   type LikeEntity,
+  type LikeStub,
+  deletePost,
+  deleteLike,
+  unsubscribeListener,
+  profileUpdateListener,
+  commentCreateListener,
+  likeCreateListener,
+  likeDeleteListener,
 } from "../data/entities";
 
-// const runtimeConfig = useRuntimeConfig();
 let isMenu = ref(false);
 let isLike = ref(false);
 let isDeleting = ref(false);
 let likeEntities = ref([] as LikeEntity[]);
+let profile = ref();
+let hasLiked = ref(false);
+let loading = ref(true);
 
 const emit = defineEmits(["isDeleted"]);
 const props = defineProps({ post: Object, user: Object });
+const listeners = ref([]);
 
-onBeforeMount(async () => {
-  const likePromises = props.post.likes.map((likeStub) =>
+const setup = async () => {
+  const likePromises = props.post?.likes.map((likeStub: LikeStub) =>
     hydrateLike(likeStub.id)
   );
   const likes = await Promise.all(likePromises);
   likeEntities.value = likes;
+  const user = await getCurrentUser();
+  profile.value = await getProfileFromUser(user);
+  const userLike = likeEntities.value.find(
+    (like: LikeEntity) =>
+      like?.profile.id == profile.value?.id && like?.post.id == props.post?.id
+  );
+  hasLiked.value = !!userLike;
+  loading.value = false;
+};
+onBeforeMount(async () => {
+  await setup();
+  const profileListener = profileUpdateListener(setup);
+  const commentListener = commentCreateListener(setup);
+  const likeListener = likeCreateListener(setup);
+  const unlikeListener = likeDeleteListener(setup);
+  listeners.value = [
+    profileListener,
+    commentListener,
+    likeListener,
+    unlikeListener,
+  ];
 });
-
-const formatDate = (date) => {
+onUnmounted(() => {
+  listeners.value.map((listener) => unsubscribeListener(listener));
+});
+const formatDate = (date: Date) => {
   const formatter = new Intl.DateTimeFormat("en-US", { dateStyle: "short" });
   const formattedDate = formatter.format(date);
   return formattedDate;
 };
 
-const hasLikedComputed = computed(() => {
-  let res = false;
-  props.post.likes?.forEach((like) => {
-    if (like.userId == props.user.userId && like.postId == props.post.id) {
-      res = true;
-    }
-  });
-
-  return res;
-});
-
-const deleteUserPost = async (id) => {
+const deleteUserPost = async (id: string) => {
   let res = confirm("Are you sure you want to delete this post?");
 
   if (!res) return;
@@ -245,7 +271,6 @@ const deleteUserPost = async (id) => {
   try {
     isMenu.value = false;
     isDeleting.value = true;
-    // await removeFile(picture, "arbor-eats-app-files");
     await deletePost(await hydratePost(id));
     emit("isDeleted", true);
 
@@ -256,12 +281,12 @@ const deleteUserPost = async (id) => {
   }
 };
 
-const viewPost = (post) => {
+const viewPost = (post: any) => {
   return navigateTo(`/post?post_id=${post.id}`);
 };
 
-const likePost = async (id) => {
-  const servingsResponse = parseInt(prompt("How many servings?"));
+const likePost = async (id: string) => {
+  const servingsResponse = parseInt(prompt("How many servings?")!);
   console.log({ servingsResponse });
   if (Number.isNaN(servingsResponse) || servingsResponse < 1) {
     alert("Just put a dang valid number in the box ya dingus");
@@ -271,8 +296,6 @@ const likePost = async (id) => {
   try {
     const profile = await getProfileFromUser(props.user as AuthUser);
     await createLike(profile, await hydratePost(id), servingsResponse);
-
-    // await userStore.getAllPosts();
     isLike.value = false;
   } catch (error) {
     console.log(error);
@@ -280,11 +303,10 @@ const likePost = async (id) => {
   }
 };
 
-const unlikePost = async (id) => {
+const unlikePost = async (id: string) => {
   isLike.value = true;
   try {
     await deleteLike(await hydrateLike(id));
-    // await userStore.getAllPosts();
     isLike.value = false;
   } catch (error) {
     console.log(error);
@@ -293,30 +315,20 @@ const unlikePost = async (id) => {
 };
 
 const likesFunc = () => {
-  console.log({ line: 282 });
-  let likePostObj = null;
-
-  if (props.post.likes?.length < 1) {
-    console.log({ line: 286 });
-    likePost(props.post.id);
+  if (props.post?.likes?.length < 1) {
+    likePost(props.post?.id);
     return null;
-  } else {
-    console.log({ line: 290 });
-    props.post.likes?.forEach((like) => {
-      if (like.userId == user.userId && like.postId == props.post.id) {
-        console.log({ line: 293 });
-        likePostObj = like;
-      }
-    });
   }
 
-  console.log({ line: 299 });
+  const likePostObj = likeEntities.value.find(
+    (like: LikeEntity) =>
+      like.profile.id == profile.value.id && like.post.id == props.post?.id
+  );
+
   if (likePostObj) {
-    console.log({ line: 301 });
     unlikePost(likePostObj.id);
     return null;
   }
-  console.log({ line: 305 });
-  likePost(props.post.id);
+  likePost(props.post?.id);
 };
 </script>

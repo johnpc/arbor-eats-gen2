@@ -27,7 +27,7 @@
             color="#ffffff"
           />
         </button>
-        <button @click="userStore.isMenuOverlay = true" class="w-full h-full">
+        <button class="w-full h-full">
           <Icon
             class="mb-1"
             name="material-symbols:edit-square-outline-rounded"
@@ -35,7 +35,7 @@
             color="#ffffff"
           />
         </button>
-        <button @click="userStore.isLogoutOverlay = true" class="w-full h-full">
+        <button class="w-full h-full">
           <Icon
             class="mb-1"
             name="mdi:account-cog-outline"
@@ -48,7 +48,4 @@
   </div>
 </template>
 
-<script setup>
-// import { useUserStore } from "../stores/user";
-// const userStore = useUserStore();
-</script>
+<script setup></script>

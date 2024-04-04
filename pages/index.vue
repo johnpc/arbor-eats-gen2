@@ -49,33 +49,48 @@ import config from "../amplifyconfiguration.json";
 import { onMounted, ref } from "vue";
 import {
   listPosts,
-  createOrGetProfile,
   type PostEntity,
+  unsubscribeListener,
+  profileUpdateListener,
+  commentCreateListener,
+  likeCreateListener,
+  likeDeleteListener,
 } from "../data/entities";
+import { getProfileFromUser } from "../helpers/userProfileHelper";
 import { getCurrentUser } from "aws-amplify/auth";
 Amplify.configure(config);
 
 let isLoading = ref(false);
 let posts = ref([] as PostEntity[]);
+const listeners = ref([]);
 
-onMounted(async () => {
+const setup = async () => {
   isLoading.value = true;
   try {
     const postList = await listPosts();
     const user = await getCurrentUser();
-    await createOrGetProfile({
-      name: user.signInDetails?.loginId || user.username || user.userId,
-      email: user.signInDetails!.loginId!,
-      avatar:
-        "https://fdocizdzprkfeigbnlxy.supabase.co/storage/v1/object/public/arbor-eats-app-files/missing-avatar.png",
-      userId: user.userId,
-      venmoHandle: "",
-    });
+    await getProfileFromUser(user);
     posts.value = postList;
     isLoading.value = false;
   } catch (error) {
     console.log(error);
   }
+};
+onMounted(async () => {
+  await setup();
+  const profileListener = profileUpdateListener(setup);
+  const commentListener = commentCreateListener(setup);
+  const likeListener = likeCreateListener(setup);
+  const unlikeListener = likeDeleteListener(setup);
+  listeners.value = [
+    profileListener,
+    commentListener,
+    likeListener,
+    unlikeListener,
+  ];
+});
+onUnmounted(() => {
+  listeners.value.map((listener) => unsubscribeListener(listener));
 });
 </script>
 

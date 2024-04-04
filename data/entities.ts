@@ -4,6 +4,7 @@ import { type Schema } from "../amplify/data/resource";
 import config from "../amplifyconfiguration.json";
 import { CacheSingleton } from "./cache-singleton";
 import { dateToString } from "~/helpers/dateToString";
+import { Subscription } from "rxjs";
 
 Amplify.configure(config);
 const client = generateClient<Schema>({
@@ -264,4 +265,45 @@ export const deleteNotification = async (notification: NotificationEntity) => {
   });
 
   return true;
+};
+
+const genericListener = (
+  model: "Post" | "Profile" | "Like" | "Comment",
+  operation: "Delete" | "Create" | "Update",
+  fn: () => void
+) => {
+  const listener = (client.models[model][`on${operation}`]() as any).subscribe({
+    next: async () => {
+      const cacheInstance = await CacheSingleton.getInstance();
+      await cacheInstance.initialize();
+      fn();
+    },
+    error: (error: Error) => {
+      console.error("Subscription error", error);
+    },
+  });
+  return listener;
+};
+
+export const postCreateListener = (fn: () => void) => {
+  return genericListener("Post", "Create", fn);
+};
+export const likeCreateListener = (fn: () => void) => {
+  return genericListener("Like", "Create", fn);
+};
+export const commentCreateListener = (fn: () => void) => {
+  return genericListener("Comment", "Create", fn);
+};
+export const profileUpdateListener = (fn: () => void) => {
+  return genericListener("Profile", "Update", fn);
+};
+export const postDeleteListener = (fn: () => void) => {
+  return genericListener("Post", "Delete", fn);
+};
+export const likeDeleteListener = (fn: () => void) => {
+  return genericListener("Like", "Delete", fn);
+};
+
+export const unsubscribeListener = (subscription: Subscription) => {
+  return subscription.unsubscribe();
 };

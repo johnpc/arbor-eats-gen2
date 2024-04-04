@@ -18,28 +18,45 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount, ref } from "vue";
-import { hydrateComment, hydrateProfile } from "../data/entities";
+import {
+  commentCreateListener,
+  hydrateComment,
+  hydrateProfile,
+  profileUpdateListener,
+  unsubscribeListener,
+} from "../data/entities";
 
 const props = defineProps({ comment: Object });
 const avatar = ref();
 const commentText = ref(props.comment.text);
 const commentName = ref();
 const commentDate = ref(props.comment.createdAt);
-
+const listeners = ref([]);
 const formatDate = (date) => {
   const formatter = new Intl.DateTimeFormat("en-US", { dateStyle: "short" });
   const formattedDate = formatter.format(date);
   return formattedDate;
 };
 
-onBeforeMount(async () => {
+const setup = async () => {
   const comment = await hydrateComment(props.comment.id);
   const profile = await hydrateProfile(comment.profile.id);
   commentName.value = profile.name;
   commentText.value = comment.text;
   commentDate.value = comment.createdAt;
   avatar.value = profile.avatar;
+};
+
+onBeforeMount(async () => {
+  await setup();
+  const profileListener = profileUpdateListener(setup);
+  const commentListener = commentCreateListener(setup);
+  listeners.value = [profileListener, commentListener];
+});
+
+onUnmounted(() => {
+  listeners.value.map((listener) => unsubscribeListener(listener));
 });
 </script>

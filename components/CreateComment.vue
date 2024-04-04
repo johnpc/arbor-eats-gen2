@@ -70,7 +70,6 @@ async function addComment() {
     commentText.value
   );
 
-  // await refreshNuxtData("get-post");
   commentText.value = "";
   isLoading.value = false;
 }
