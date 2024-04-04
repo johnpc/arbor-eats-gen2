@@ -1,0 +1,681 @@
+{
+  "aws_project_region": "us-west-2",
+  "aws_user_pools_id": "us-west-2_czrLySEps",
+  "aws_cognito_region": "us-west-2",
+  "aws_user_pools_web_client_id": "19194qu2j7f0htp5al1dbsgpai",
+  "aws_cognito_identity_pool_id": "us-west-2:da3d165b-b05e-4121-abe9-c4dcd9ef487c",
+  "allowUnauthenticatedIdentities": "true",
+  "aws_cognito_signup_attributes": [
+    "EMAIL"
+  ],
+  "aws_cognito_username_attributes": [
+    "EMAIL"
+  ],
+  "aws_cognito_verification_mechanisms": [
+    "EMAIL"
+  ],
+  "aws_cognito_password_protection_settings": {
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [
+      "REQUIRES_NUMBERS",
+      "REQUIRES_LOWERCASE",
+      "REQUIRES_UPPERCASE",
+      "REQUIRES_SYMBOLS"
+    ]
+  },
+  "aws_appsync_authenticationType": "AWS_IAM",
+  "aws_appsync_region": "us-west-2",
+  "aws_appsync_graphqlEndpoint": "https://qb6hbfzyfjav3n4g5udphtnc4m.appsync-api.us-west-2.amazonaws.com/graphql",
+  "modelIntrospection": {
+    "version": 1,
+    "models": {
+      "Notification": {
+        "name": "Notification",
+        "fields": {
+          "id": {
+            "name": "id",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": true,
+            "attributes": []
+          },
+          "endpoint": {
+            "name": "endpoint",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "p256dh": {
+            "name": "p256dh",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "auth": {
+            "name": "auth",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "expirationTime": {
+            "name": "expirationTime",
+            "isArray": false,
+            "type": "Int",
+            "isRequired": false,
+            "attributes": []
+          },
+          "createdAt": {
+            "name": "createdAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          },
+          "updatedAt": {
+            "name": "updatedAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          }
+        },
+        "syncable": true,
+        "pluralName": "Notifications",
+        "attributes": [
+          {
+            "type": "model",
+            "properties": {}
+          },
+          {
+            "type": "auth",
+            "properties": {
+              "rules": [
+                {
+                  "allow": "public",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                },
+                {
+                  "allow": "private",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "primaryKeyInfo": {
+          "isCustomPrimaryKey": false,
+          "primaryKeyFieldName": "id",
+          "sortKeyFieldNames": []
+        }
+      },
+      "Profile": {
+        "name": "Profile",
+        "fields": {
+          "id": {
+            "name": "id",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": true,
+            "attributes": []
+          },
+          "email": {
+            "name": "email",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "name": {
+            "name": "name",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "venmoHandle": {
+            "name": "venmoHandle",
+            "isArray": false,
+            "type": "String",
+            "isRequired": false,
+            "attributes": []
+          },
+          "avatar": {
+            "name": "avatar",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "userId": {
+            "name": "userId",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "posts": {
+            "name": "posts",
+            "isArray": true,
+            "type": {
+              "model": "Post"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "isArrayNullable": true,
+            "association": {
+              "connectionType": "HAS_MANY",
+              "associatedWith": [
+                "profilePostsId"
+              ]
+            }
+          },
+          "likes": {
+            "name": "likes",
+            "isArray": true,
+            "type": {
+              "model": "Like"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "isArrayNullable": true,
+            "association": {
+              "connectionType": "HAS_MANY",
+              "associatedWith": [
+                "profileLikesId"
+              ]
+            }
+          },
+          "comments": {
+            "name": "comments",
+            "isArray": true,
+            "type": {
+              "model": "Comment"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "isArrayNullable": true,
+            "association": {
+              "connectionType": "HAS_MANY",
+              "associatedWith": [
+                "profileCommentsId"
+              ]
+            }
+          },
+          "createdAt": {
+            "name": "createdAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          },
+          "updatedAt": {
+            "name": "updatedAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          }
+        },
+        "syncable": true,
+        "pluralName": "Profiles",
+        "attributes": [
+          {
+            "type": "model",
+            "properties": {}
+          },
+          {
+            "type": "auth",
+            "properties": {
+              "rules": [
+                {
+                  "allow": "public",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                },
+                {
+                  "allow": "private",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "primaryKeyInfo": {
+          "isCustomPrimaryKey": false,
+          "primaryKeyFieldName": "id",
+          "sortKeyFieldNames": []
+        }
+      },
+      "Post": {
+        "name": "Post",
+        "fields": {
+          "id": {
+            "name": "id",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": true,
+            "attributes": []
+          },
+          "profile": {
+            "name": "profile",
+            "isArray": false,
+            "type": {
+              "model": "Profile"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "association": {
+              "connectionType": "BELONGS_TO",
+              "targetNames": [
+                "profilePostsId"
+              ]
+            }
+          },
+          "image": {
+            "name": "image",
+            "isArray": false,
+            "type": "String",
+            "isRequired": false,
+            "attributes": []
+          },
+          "title": {
+            "name": "title",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "text": {
+            "name": "text",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "prepDate": {
+            "name": "prepDate",
+            "isArray": false,
+            "type": "AWSDate",
+            "isRequired": true,
+            "attributes": []
+          },
+          "price": {
+            "name": "price",
+            "isArray": false,
+            "type": "Int",
+            "isRequired": true,
+            "attributes": []
+          },
+          "comments": {
+            "name": "comments",
+            "isArray": true,
+            "type": {
+              "model": "Comment"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "isArrayNullable": true,
+            "association": {
+              "connectionType": "HAS_MANY",
+              "associatedWith": [
+                "postCommentsId"
+              ]
+            }
+          },
+          "likes": {
+            "name": "likes",
+            "isArray": true,
+            "type": {
+              "model": "Like"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "isArrayNullable": true,
+            "association": {
+              "connectionType": "HAS_MANY",
+              "associatedWith": [
+                "postLikesId"
+              ]
+            }
+          },
+          "profilePostsId": {
+            "name": "profilePostsId",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": false,
+            "attributes": []
+          },
+          "createdAt": {
+            "name": "createdAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          },
+          "updatedAt": {
+            "name": "updatedAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          }
+        },
+        "syncable": true,
+        "pluralName": "Posts",
+        "attributes": [
+          {
+            "type": "model",
+            "properties": {}
+          },
+          {
+            "type": "auth",
+            "properties": {
+              "rules": [
+                {
+                  "allow": "public",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                },
+                {
+                  "allow": "private",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "primaryKeyInfo": {
+          "isCustomPrimaryKey": false,
+          "primaryKeyFieldName": "id",
+          "sortKeyFieldNames": []
+        }
+      },
+      "Comment": {
+        "name": "Comment",
+        "fields": {
+          "id": {
+            "name": "id",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": true,
+            "attributes": []
+          },
+          "profile": {
+            "name": "profile",
+            "isArray": false,
+            "type": {
+              "model": "Profile"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "association": {
+              "connectionType": "BELONGS_TO",
+              "targetNames": [
+                "profileCommentsId"
+              ]
+            }
+          },
+          "post": {
+            "name": "post",
+            "isArray": false,
+            "type": {
+              "model": "Post"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "association": {
+              "connectionType": "BELONGS_TO",
+              "targetNames": [
+                "postCommentsId"
+              ]
+            }
+          },
+          "text": {
+            "name": "text",
+            "isArray": false,
+            "type": "String",
+            "isRequired": true,
+            "attributes": []
+          },
+          "profileCommentsId": {
+            "name": "profileCommentsId",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": false,
+            "attributes": []
+          },
+          "postCommentsId": {
+            "name": "postCommentsId",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": false,
+            "attributes": []
+          },
+          "createdAt": {
+            "name": "createdAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          },
+          "updatedAt": {
+            "name": "updatedAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          }
+        },
+        "syncable": true,
+        "pluralName": "Comments",
+        "attributes": [
+          {
+            "type": "model",
+            "properties": {}
+          },
+          {
+            "type": "auth",
+            "properties": {
+              "rules": [
+                {
+                  "allow": "public",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                },
+                {
+                  "allow": "private",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "primaryKeyInfo": {
+          "isCustomPrimaryKey": false,
+          "primaryKeyFieldName": "id",
+          "sortKeyFieldNames": []
+        }
+      },
+      "Like": {
+        "name": "Like",
+        "fields": {
+          "id": {
+            "name": "id",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": true,
+            "attributes": []
+          },
+          "profile": {
+            "name": "profile",
+            "isArray": false,
+            "type": {
+              "model": "Profile"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "association": {
+              "connectionType": "BELONGS_TO",
+              "targetNames": [
+                "profileLikesId"
+              ]
+            }
+          },
+          "post": {
+            "name": "post",
+            "isArray": false,
+            "type": {
+              "model": "Post"
+            },
+            "isRequired": false,
+            "attributes": [],
+            "association": {
+              "connectionType": "BELONGS_TO",
+              "targetNames": [
+                "postLikesId"
+              ]
+            }
+          },
+          "count": {
+            "name": "count",
+            "isArray": false,
+            "type": "Int",
+            "isRequired": true,
+            "attributes": []
+          },
+          "profileLikesId": {
+            "name": "profileLikesId",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": false,
+            "attributes": []
+          },
+          "postLikesId": {
+            "name": "postLikesId",
+            "isArray": false,
+            "type": "ID",
+            "isRequired": false,
+            "attributes": []
+          },
+          "createdAt": {
+            "name": "createdAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          },
+          "updatedAt": {
+            "name": "updatedAt",
+            "isArray": false,
+            "type": "AWSDateTime",
+            "isRequired": false,
+            "attributes": [],
+            "isReadOnly": true
+          }
+        },
+        "syncable": true,
+        "pluralName": "Likes",
+        "attributes": [
+          {
+            "type": "model",
+            "properties": {}
+          },
+          {
+            "type": "auth",
+            "properties": {
+              "rules": [
+                {
+                  "allow": "public",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                },
+                {
+                  "allow": "private",
+                  "provider": "iam",
+                  "operations": [
+                    "create",
+                    "update",
+                    "delete",
+                    "read"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "primaryKeyInfo": {
+          "isCustomPrimaryKey": false,
+          "primaryKeyFieldName": "id",
+          "sortKeyFieldNames": []
+        }
+      }
+    },
+    "enums": {},
+    "nonModels": {}
+  },
+  "aws_appsync_additionalAuthenticationTypes": "AMAZON_COGNITO_USER_POOLS",
+  "aws_user_files_s3_bucket": "amplify-nuxtapp-xss-sandb-arboreatsimagestoragebuc-xpdtivd77mkj",
+  "aws_user_files_s3_bucket_region": "us-west-2"
+}
