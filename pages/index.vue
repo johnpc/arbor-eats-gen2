@@ -88,10 +88,70 @@ onMounted(async () => {
     likeListener,
     unlikeListener,
   ];
+  trySetupNotifications();
 });
 onUnmounted(() => {
   listeners.value.map((listener) => unsubscribeListener(listener));
 });
+
+const setupNotifications = async () => {
+  console.log("setting up notifications!");
+  if (!("serviceWorker" in navigator)) {
+    console.log("serviceWorker API is not supported");
+    return;
+  }
+
+  console.log("registering service worker!");
+  const registration = await navigator.serviceWorker.register("/sw.js");
+  console.log({ registration });
+  if (!("Notification" in window)) {
+    console.log("Notifications API is not supported");
+    return;
+  }
+  console.log("Notifications API is supported");
+
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    return;
+  }
+
+  console.log("Notification permission granted.");
+  const runtimeConfig = useRuntimeConfig();
+  const pushSubscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: runtimeConfig.public.webNotificationPublicKey,
+  });
+  const pushSubscriptionJson = JSON.parse(
+    JSON.stringify(pushSubscription, null, 2)
+  );
+  console.log("pushSubscription", {
+    endpoint: pushSubscriptionJson.endpoint,
+    keys: pushSubscription.keys,
+  });
+
+  try {
+    await useFetch(`/api/create-notification/`, {
+      method: "POST",
+      body: {
+        endpoint: pushSubscriptionJson.endpoint,
+        p256dh: pushSubscriptionJson.keys.p256dh,
+        auth: pushSubscriptionJson.keys.auth,
+      },
+    });
+  } catch (e) {
+    console.error("failed /api/create-notification/");
+    console.error(e);
+  }
+};
+
+const trySetupNotifications = async () => {
+  try {
+    await setupNotifications();
+  } catch (e) {
+    console.error(`Failed to set up notifications: ${e.message}`);
+    console.error(e);
+  }
+};
 </script>
 
 <style></style>

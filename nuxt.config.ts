@@ -10,7 +10,6 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     public: {
-      bucketUrl: process.env.BUCKET_URL,
       webNotificationPublicKey: process.env.WEB_NOTIFICATION_PUBLIC_KEY,
     },
   },

@@ -146,6 +146,7 @@ import Datepicker from "@vuepic/vue-datepicker";
 import { v4 as uuidv4 } from "uuid";
 import { uploadImageData } from "../helpers/uploadFileHelper";
 import { getProfileFromUser } from "../helpers/userProfileHelper";
+import { notify } from "../helpers/notify";
 
 import "@vuepic/vue-datepicker/dist/main.css";
 Amplify.configure(config);
@@ -222,6 +223,12 @@ const createUserPost = async () => {
 
     clearData();
     isLoading.value = false;
+    notify({
+      title: title.value,
+      name: profile.value.name,
+      text: text.value,
+      price: price.value,
+    });
   } catch (error) {
     console.log(error);
     isLoading.value = false;
